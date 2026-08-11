@@ -1,121 +1,161 @@
-﻿// ------------------------------------------------------------------------------------------------ 
-// Training ~ A training program for new joinees at Metamation, Batch- July 2026. 
-// Copyright (c) Metamation India. 
-// ------------------------------------------------------------------------------------------------- 
+﻿// ------------------------------------------------------------------------------------------------
+// Training ~ A training program for new joinees at Metamation, Batch- July 2026.
+// Copyright (c) Metamation India.
+// -------------------------------------------------------------------------------------------------
+// Program.cs
+// Program to implement a simple guessing game with three modes:
+// 1. Computer guesses using Binary Search.
+// 2. User guesses the computer's random number.
+// 3. Computer guesses using Reverse Method.
+// -------------------------------------------------------------------------------------------------
 
-// Program.cs 
-// Write a program to implement a simple _guessing game_. The computer thinks of a random
-// number between 1 and 100, and the user has to guess it. The user can enter an number, and
-// the computer will respond with one of these:
-// Your guess is too high
-// Your guess is too low
-// You guessed correctly 	 
-// ------------------------------------------------------------------------------------------------ 
+using System;
 
-namespace A02;
+while(true) {
+   Console.WriteLine("Welcome to the Guessing Game!");
+   Console.WriteLine("Choose a mode: 1 - Computer guesses, 2 - User guesses, 3 - Computer guesses (Reverse Method)");
+   Console.WriteLine("Enter your choice (1, 2, or 3):");
+   Console.WriteLine("Enter 'e' to quit the game.");
+   Console.WriteLine("---------------------------------------------------");
 
-class Program {
-   static int low = 1;
-   static int high = 100;
-   static int attempts = 0;
-   static int maxattempts = 7;
+   string input = Console.ReadLine () ?? "";
+   if(input.ToLower () == "e") {
+      break;
+   }
 
-   static void Main (string[] args) {
-      Console.WriteLine ("Welcome to the Guessing Game");
-      Console.WriteLine ("Please select the mode of the game. Enter 1 for Computer Guesses, 2 for User Guesses");
+   if (!int.TryParse(input, out int mode)) {
+      Console.WriteLine("Invalid input. Please enter a valid mode (1, 2, or 3).");
+      continue;
+   }
 
-      int mode;
-      for (; ; ) {
-         if (int.TryParse (Console.ReadLine (), out mode)) {
-            switch (mode) {
-               case 1:
-                  Console.WriteLine("You chosen Computer Guesses mode. The computer will try to guess your number.");
-                  ComputerGuesses ();
-                  break;
-               case 2:
-                  Console.WriteLine("You chosen User Guesses mode. You will try to guess the computer's number.");
-                  UserGuesses ();
-                  break;
-               default:
-                  Console.WriteLine ("Invalid input. Please enter 1 or 2.");
-                  continue;
-            }
+   switch (mode) {
+      case 1:
+         ComputerGuesses ();
+         break;
+      case 2:
+         UserGuesses ();
+         break; 
+      case 3:
+         ReverseGuesses ();
+         break;
+      default:
+         Console.WriteLine("Invalid mode selected. Please choose 1, 2, or 3.");
+         break;
+   }
+}
+
+void ComputerGuesses () {
+   int low = 1;
+   int high = 100;
+   int attempts = 0;
+   int maxattempts = 7;
+
+
+   Console.Write ("Think of a number between 1 and 100, and hit Enter");
+   Console.ReadLine ();
+
+   while(attempts < maxattempts) {
+      int guess = (low + high) / 2;
+      attempts++;
+      Console.WriteLine ($"Computer guesses: {guess}. Is it correct? (y - yes/n - no)");
+      string response = Console.ReadLine () ?? "";
+      if (response.ToLower () == "y") {
+         Console.WriteLine ($"Computer guessed your number {guess} in {attempts} attempts!");
+         return;
+      } else {
+         Console.WriteLine ("Is your number higher or lower than the guess? (Enter h for higher/l for lower)");
+         response = Console.ReadLine () ?? "";
+         if (response.ToLower () == "h") {
+            low = guess + 1;
+         } else if (response.ToLower () == "l") {
+            high = guess - 1;
          } else {
-            Console.WriteLine ("Invalid input. Please enter a number.");
+            Console.WriteLine ("Invalid response. Please answer with 'h' or 'l'.");
+            attempts--;
          }
       }
    }
+}
 
-   static void ComputerGuesses() {    
-      Console.WriteLine ($"Please Think the number between {low} to {high} and hit Enter");
-      Console.ReadLine ();
+void UserGuesses () {
+   Random rand = new Random ();
+   int numberToGuess = rand.Next (1, 101);
+   int low = 1;
+   int high = 100;
+   int attempts = 0;
+   int maxattempts = 7;
 
-      while (attempts < maxattempts) {
-         if (low <= high) {
-            int guess = (low + high) / 2;
-            attempts++;
+   while (attempts < maxattempts) {
+      Console.WriteLine ($"I have selected a number between {low} and {high}. Try to guess it!");
 
-            Console.WriteLine ($"Guess is {guess}");
-            Console.Write ("Enter H for High, L for Low, C for Correct");
-            Console.WriteLine ();
+      if (!int.TryParse (Console.ReadLine (), out int userGuess)) {
+         Console.WriteLine ("Invalid input. Please enter a valid number.");
+         continue;
+      }
+   
+      attempts++;
+      if (userGuess < low || userGuess > high) {
+         Console.WriteLine ($"Please enter a number between {low} and {high}.");
+         continue;
+      }
 
-            string? response = Console.ReadLine ();
-            if (response != null) {
-               response = response.Trim ().ToUpper ();
-            } else {
-               Console.WriteLine ("Invalid input. Please enter H, L, or C.");
-               continue;
-            }
-
-            if (response == "H") {
-               high = guess - 1;
-            } else if (response == "L") {
-               low = guess + 1;
-            } else if (response == "C") {
-               Console.WriteLine ($"Your Guess is Correct and acheived in {attempts} attempts");
-               pause ();
-               break;
-            }
-         }
+      if (userGuess == numberToGuess) {
+         Console.WriteLine ($"Congratulations! You guessed the number {numberToGuess} in {attempts} attempts!");
+         pause ();
+         return;
+      } else if (userGuess < numberToGuess) {
+         Console.WriteLine ("your guess is low. Try again.");
+         low = userGuess + 1;
+      } else {
+         Console.WriteLine ("your guess is high. Try again.");
+         high = userGuess - 1;
       }
    }
+   Console.WriteLine ("you have exhausted your attempts. The number was: " + numberToGuess);
+   pause ();
+}
 
-   static void UserGuesses () {
-      Random r = new Random ();
-      int randomNumber = r.Next (1, 100);
+void ReverseGuesses () {
+   int attempts = 0;
+   int low = 1;
+   int high = 100;
+   int maxattempts = 7;
+   Console.WriteLine ();
+   Console.WriteLine ("Think of a number between 1 and 100, and hit Enter");
+   Console.WriteLine ("I will try to guess from downwards.");
+   Console.ReadLine ();
 
-      while (attempts <= maxattempts) {
-         Console.WriteLine ($"Range {low} - {high}");
-         Console.WriteLine ("Enter Your Guess Now");
+   while (attempts < maxattempts) {
+      int guess;
+      if (attempts == 0) {
+         guess = high;
+      } else {
+         guess = (low + high) / 2; // Decrease by 15 each time
+      }
+      attempts++;
 
-         if (!int.TryParse (Console.ReadLine (), out int guess)) {
-            Console.WriteLine ("Enter a Valid Value");
-         }
+      Console.WriteLine ();
+      Console.WriteLine ("My guess is : " + guess + ". Enter h for higher, l for lower, or c if correct.");
+      string response = Console.ReadLine () ?? "";
+      if (response == "c") {
+         Console.WriteLine ($"I guessed your number {guess} in {attempts} attempts!");
+         pause ();
+         return;
 
-         attempts++;
-
-         if (guess < randomNumber) {
-            Console.WriteLine ("Your Guess is Low");
-
-            if (guess >= low) {
-               low = guess + 1;
-            }
-         } else if (guess > randomNumber) {
-            Console.WriteLine ("Your Guess is High");
-
-            if (guess <= high) {
-               high = guess - 1;
-            }
-         } else {
-            Console.WriteLine ($"Your Guess is Correct and acheived in {attempts} attempts");
-            pause ();
-            break;
-         }
+      } else if (response == "h") {
+         low = guess + 1;
+      } else if (response == "l") {
+         high = guess - 1;
+      } else {
+         Console.WriteLine ("Invalid response. Please enter 'h', 'l', or 'c'.");
+         attempts--;
       }
    }
+   Console.WriteLine ("Couldn't guess the number");
+   pause ();
+}
 
-   static void pause () {
-      Console.WriteLine ("Press any key to continue...");
-      Console.ReadLine ();
-   }
+void pause() {
+   Console.WriteLine ("Press any key to continue...");
+   Console.ReadKey ();
 }
