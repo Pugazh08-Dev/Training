@@ -14,19 +14,18 @@ char[] letters = new char[] { 'U', 'X', 'A', 'L', 'T', 'N', 'E' };
 
 int totalscore = 0;
 
-foreach(string line in System.IO.File.ReadAllLines ("C:\\Users\\murugesanpu\\Downloads\\words 1.txt")) {
+foreach (string line in System.IO.File.ReadAllLines ("C:\\Users\\murugesanpu\\Downloads\\words 1.txt")) {
    string word = line.Trim ().ToUpper ();
    if (word.Length < 4 || !word.Contains ('U')) continue;
    if (!IsValidWord (word)) continue;
    int score = CalculateScore (word);
-   totalscore += score;
-   Console.WriteLine ($"{word} - Score: {score}");
+   totalscore += score; Console.WriteLine ($"{word} - Score: {score}");
 }
 Console.WriteLine ($"Total Score: {totalscore}");
 
-int CalculateScore(string word) {
+int CalculateScore (string word) {
    int score = word.Length == 4 ? 1 : word.Length;
-   if(IsPangram (word)) {
+   if (IsPangram (word)) {
       score += 7;
    }
    return score;
@@ -37,5 +36,5 @@ bool IsValidWord (string word) {
 }
 
 bool IsPangram (string word) {
-   return letters.All(c => word.Contains (c));
+   return letters.All (c => word.Contains (c));
 }

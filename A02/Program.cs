@@ -29,11 +29,11 @@ class Program {
          if (int.TryParse (Console.ReadLine (), out mode)) {
             switch (mode) {
                case 1:
-                  Console.WriteLine("You chosen Computer Guesses mode. The computer will try to guess your number.");
+                  Console.WriteLine ("You chosen Computer Guesses mode. The computer will try to guess your number.");
                   ComputerGuesses ();
                   break;
                case 2:
-                  Console.WriteLine("You chosen User Guesses mode. You will try to guess the computer's number.");
+                  Console.WriteLine ("You chosen User Guesses mode. You will try to guess the computer's number.");
                   UserGuesses ();
                   break;
                default:
@@ -46,7 +46,7 @@ class Program {
       }
    }
 
-   static void ComputerGuesses() {    
+   static void ComputerGuesses () {
       Console.WriteLine ($"Please Think the number between {low} to {high} and hit Enter");
       Console.ReadLine ();
 

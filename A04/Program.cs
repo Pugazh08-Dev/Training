@@ -18,15 +18,15 @@ var charCount = new Dictionary<char, int> {
    ['E'] = 0
 };
 
-foreach(var line in File.ReadLines("C:\\Users\\murugesanpu\\Downloads\\words 1.txt")) {
-   foreach(var c in line) {
+foreach (var line in File.ReadLines ("C:\\Users\\murugesanpu\\Downloads\\words 1.txt")) {
+   foreach (var c in line) {
       if (charCount.ContainsKey (c)) {
          charCount[c]++;
       }
    }
 }
 
-Console.WriteLine("Here, is the count of the characters in the file:");
+Console.WriteLine ("Here, is the count of the characters in the file:");
 foreach (var kvp in charCount) {
    Console.WriteLine ($"Character '{kvp.Key}': {kvp.Value} occurrences");
 }
