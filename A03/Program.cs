@@ -9,32 +9,39 @@
 
 using System;
 using System.Linq;
+using System.IO;
+using System.Collections.Generic;
 
-char[] letters = new char[] { 'U', 'X', 'A', 'L', 'T', 'N', 'E' };
+char[] letters = [ 'U', 'X', 'A', 'L', 'T', 'N', 'E' ];
+var results = new List<(int score, string word)>();
+int totalScore = 0;
 
-int totalscore = 0;
-
-foreach (string line in System.IO.File.ReadAllLines ("C:\\Users\\murugesanpu\\Downloads\\words 1.txt")) {
+foreach (string line in File.ReadAllLines ("words 1.txt")) {
    string word = line.Trim ().ToUpper ();
    if (word.Length < 4 || !word.Contains ('U')) continue;
    if (!IsValidWord (word)) continue;
    int score = CalculateScore (word);
-   totalscore += score; Console.WriteLine ($"{word} - Score: {score}");
+   totalScore += score; results.Add ((score, word));
 }
-Console.WriteLine ($"Total Score: {totalscore}");
+
+int maxScore = results.Max (x => x.score);
+
+foreach (var (score, word) in results.OrderByDescending (x => x.score).ThenBy (x => x.word)) {
+   if(score == maxScore) 
+      Console.ForegroundColor = ConsoleColor.Green;
+
+   Console.WriteLine ($"{score}. {word}");
+   Console.ResetColor ();
+}
+Console.WriteLine ($"--- \n{totalScore} Total");
 
 int CalculateScore (string word) {
    int score = word.Length == 4 ? 1 : word.Length;
-   if (IsPangram (word)) {
+   if (IsPangram (word))
       score += 7;
-   }
    return score;
 }
 
-bool IsValidWord (string word) {
-   return word.All (c => letters.Contains (c));
-}
+bool IsValidWord (string word) => word.All (c => letters.Contains (c));
 
-bool IsPangram (string word) {
-   return letters.All (c => word.Contains (c));
-}
+bool IsPangram (string word) => letters.All (c => word.Contains (c));
