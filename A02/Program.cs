@@ -71,7 +71,7 @@ class Program {
          } else if (response == "L") {
             low = guess + 1;
          } else {
-            Console.WriteLine ($"Your Guess is Correct and acheived in {attempts} attempts");
+            Console.WriteLine ($"Your Guess is Correct and achieved in {attempts} attempts");
             return;
          }
       }
@@ -109,7 +109,7 @@ class Program {
             Console.WriteLine ("Your Guess is High");
             high = guess - 1;
          } else {
-            Console.WriteLine ($"Your guess is correct and acheived in {attempts} attempts");
+            Console.WriteLine ($"Your guess is correct and achieved in {attempts} attempts");
             return;
          }
       }
