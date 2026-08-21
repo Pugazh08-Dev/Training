@@ -13,7 +13,7 @@ using System.IO;
 using System.Collections.Generic;
 
 char[] letters = [ 'U', 'X', 'A', 'L', 'T', 'N', 'E' ];
-var results = new List<(int score, string word)>();
+List<(int score, string word)> results = [];
 int totalScore = 0;
 
 foreach (string line in File.ReadAllLines ("words 1.txt")) {
@@ -30,10 +30,10 @@ foreach (var (score, word) in results.OrderByDescending (x => x.score).ThenBy (x
    if(score == maxScore) 
       Console.ForegroundColor = ConsoleColor.Green;
 
-   Console.WriteLine ($"{score}. {word}");
+   Console.WriteLine ($"{score, 2}. {word}");
    Console.ResetColor ();
 }
-Console.WriteLine ($"--- \n{totalScore} Total");
+Console.WriteLine ($"---------------- \n{totalScore} Total");
 
 int CalculateScore (string word) {
    int score = word.Length == 4 ? 1 : word.Length;
