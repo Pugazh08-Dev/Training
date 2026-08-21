@@ -1,110 +1,72 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Net.Http.Headers;
+﻿using System.Text;
 using static System.Console;
 
-OutputEncoding = System.Text.Encoding.UTF8;
-int size = 8;
-
+const int N = 8;
+int[] board = new int[N];
 List<int[]> solutions = new ();
 
-int[] board = new int[size];
-FindSolutions (board, 0);
+Find (0);
+OutputEncoding = Encoding.UTF8;
+WriteLine ($"Total Solutions : {solutions.Count}");
+WriteLine ();
+List<int[]> unique = new ();
+HashSet<string> found = new ();
 
-WriteLine ($"Total Solutions : {solutions.Count} \n");
-WriteLine ("All Solutions :");
-PrintSolutions (solutions);
+foreach (int[] solution in solutions) {
+   int[] current = solution;
+   string smallest = "";
+   for (int r = 0; r < 4; r++) {
+      for (int m = 0; m < 2; m++) {
+         string key = string.Join (",", current);
+         if (smallest == "" || key.CompareTo (smallest) < 0) smallest = key;
+         int[] mirror = new int[N];
+         for (int i = 0; i < N; i++)
+            mirror[i] = N - 1 - current[i];
+         current = mirror;
+      }
+      int[] rotate = new int[N];
+      for (int i = 0; i < N; i++)
+         rotate[current[i]] = N - 1 - i;
+      current = rotate;
+   }
+   if (found.Add (smallest)) unique.Add (solution);
+}
+WriteLine ($"Canonical Solutions : {unique.Count} \n");
 
-List<int[]> uniquesolutions = FindUniqueSolutions ();
+for (int i = 0; i < unique.Count; i++) {
+   WriteLine ($"Solution {i + 1} of {unique.Count}");
+   WriteLine ("\u250c\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2510");
+   for (int row = 0; row < N; row++) {
+      for (int col = 0; col < N; col++) {
+         Write ("\u2502 ");
+         Write (unique[i][row] == col ? "\u2655" : "\u25a1");
+         Write (" ");
+      }
+      WriteLine ("\u2502");
+      if (row < N - 1)
+         WriteLine ("\u251c\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2524");
+   }
+   WriteLine ("\u2514\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2518");
+   ReadKey ();
+}
 
-WriteLine($"Unique Solutions : {uniquesolutions.Count} \n");
-WriteLine ("12 Canonical Solutions :");
-PrintSolutions(uniquesolutions);
-
-
-void FindSolutions (int[] board, int row) {
-   if (row == size) {
+// Find all solutions
+void Find (int row) {
+   if (row == N) {
       solutions.Add ((int[])board.Clone ());
       return;
    }
-
-   for (int i = 0; i < size; i++) {
-      if(IsSafe(board, row, i)) {
-         board[row] = i;
-         FindSolutions (board, row + 1);
+   for (int col = 0; col < N; col++) {
+      bool safe = true;
+      for (int previous = 0; previous < row; previous++) {
+         if (board[previous] == col || Math.Abs (board[previous] - col) == row - previous) {
+            safe = false;
+            break;
+         }
+      }
+      if (safe) {
+         board[row] = col;
+         Find (row + 1);
       }
    }
 }
-
-
-bool IsSafe (int[] board, int row, int col) {
-   for(int prevrow = 0; prevrow < row; prevrow++) {
-      int prevcol = board[prevrow];
-
-      if (prevcol == col) return false;
-      if (Math.Abs (prevrow - row) == Math.Abs (prevcol - col)) return false;
-   }
-   return true;
-}
-
-void PrintSolutions (List<int[]> boards) {
-   int num = 1;
-   foreach (int[] board in boards) {
-      WriteLine ($"Solution {num++}:");
-      PrintBoard (board);
-      WriteLine ();
-   }
-}
-
-void PrintBoard (int[] board) {
-   for (int row = 0; row < size; row++) {
-      for (int col = 0; col < size; col++) {
-         WriteLine (board[row] == col ? "\u2655" : "\u25a1");
-      }
-      WriteLine ();
-   }
-}
-
-List<int[]> FindUniqueSolutions () {
-   List<int[]> uniqueSolutioms = new ();
-   HashSet<string> found = new ();
-   foreach (int[] solution in solutions) {
-      string smallest = GetSmallestVariation (solution);
-      if (found.Add (smallest)) uniqueSolutioms.Add (solution);
-   }
-   return uniqueSolutioms;
-}
-
-string GetSmallestVariation (int[] board) {
-   string smallest = "";
-   int[] current = board;
-   for (int i = 0; i < 4; i++) {
-      string normal = GetKey (current);
-      string mirror = GetKey (Mirror (current));
-      if (smallest == null || normal.CompareTo (smallest) < 0)
-         smallest = normal;
-      if (mirror.CompareTo (smallest) < 0) smallest = mirror;
-      current = Rotate (current);
-   }
-   return smallest;
-}
-
-int[] Rotate (int[] board) {
-   int[] rotated = new int[size];
-   for (int row = 0; row < size; row++) {
-      int column = board[row];
-      rotated[column] = size - 1 - row;
-   }
-   return rotated;
-}
-
-int[] Mirror (int[] board) {
-   int[] mirrored = new int[size];
-   for(int row = 0; row < size; row++) 
-      mirrored[row] = size - 1 - board[row];
-
-   return mirrored;
-}
-
-string GetKey (int[] borad) => string.Join (",", borad);
