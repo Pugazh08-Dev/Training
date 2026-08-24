@@ -27,13 +27,13 @@ foreach (string line in File.ReadAllLines ("words 1.txt")) {
 int maxScore = results.Max (x => x.score);
 
 foreach (var (score, word) in results.OrderByDescending (x => x.score).ThenBy (x => x.word)) {
-   if(score == maxScore) 
+   if(score == maxScore)
       Console.ForegroundColor = ConsoleColor.Green;
 
    Console.WriteLine ($"{score, 2}. {word}");
    Console.ResetColor ();
 }
-Console.WriteLine ($"---------------- \n{totalScore} Total");
+Console.WriteLine ($"---- \n{totalScore} Total");
 
 int CalculateScore (string word) {
    int score = word.Length == 4 ? 1 : word.Length;
