@@ -12,7 +12,7 @@ using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 
-char[] letters = [ 'U', 'X', 'A', 'L', 'T', 'N', 'E' ];
+char[] letters = ['U', 'X', 'A', 'L', 'T', 'N', 'E'];
 List<(int score, string word)> results = [];
 int totalScore = 0;
 
@@ -27,10 +27,9 @@ foreach (string line in File.ReadAllLines ("words 1.txt")) {
 int maxScore = results.Max (x => x.score);
 
 foreach (var (score, word) in results.OrderByDescending (x => x.score).ThenBy (x => x.word)) {
-   if(score == maxScore)
-      Console.ForegroundColor = ConsoleColor.Green;
+   if (score == maxScore) Console.ForegroundColor = ConsoleColor.Green;
 
-   Console.WriteLine ($"{score, 2}. {word}");
+   Console.WriteLine ($"{score,2}. {word}");
    Console.ResetColor ();
 }
 Console.WriteLine ($"---- \n{totalScore} Total");
