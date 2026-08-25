@@ -1,4 +1,12 @@
-﻿using System.Text;
+﻿// -----------------------------------------------------------------------------------------
+// Training ~ A training program for new joinees at Metamation, Batch- July 2026.
+// Copyright (c) Metamation India.
+// -----------------------------------------------------------------------------------------
+// Program.cs
+// Program to solve the 8 Queens problem and find all possible solutions.
+// Also eliminates identical solutions caused by rotations and mirror images.
+
+using System.Text;
 using static System.Console;
 
 const int N = 8;
