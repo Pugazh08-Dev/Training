@@ -7,8 +7,6 @@ List<int[]> solutions = new ();
 
 Find (0);
 OutputEncoding = Encoding.UTF8;
-WriteLine ($"Total Solutions : {solutions.Count}");
-WriteLine ();
 List<int[]> unique = new ();
 HashSet<string> found = new ();
 
@@ -35,7 +33,7 @@ WriteLine ($"Canonical Solutions : {unique.Count} \n");
 
 for (int i = 0; i < unique.Count; i++) {
    WriteLine ($"Solution {i + 1} of {unique.Count}");
-   WriteLine ("\u250c\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2510");
+   WriteLine ("┌───┬───┬───┬───┬───┬───┬───┬───┐");
    for (int row = 0; row < N; row++) {
       for (int col = 0; col < N; col++) {
          Write ("\u2502 ");
@@ -44,10 +42,11 @@ for (int i = 0; i < unique.Count; i++) {
       }
       WriteLine ("\u2502");
       if (row < N - 1)
-         WriteLine ("\u251c\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2524");
+         WriteLine ("├───┼───┼───┼───┼───┼───┼───┼───┤");
    }
-   WriteLine ("\u2514\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2518");
+   WriteLine ("└───┴───┴───┴───┴───┴───┴───┴───┘");
    ReadKey ();
+   Clear ();
 }
 
 // Find all solutions
