@@ -16,7 +16,7 @@ int[] board = new int[N];
 List<int[]> allsolutions = [];
 Find (0);
 List<int[]> uniquesolutions = [];
-HashSet<long> found = [];
+HashSet<long> uniqueSolutionKeys = [];
 
 // Check every solution to remove rotations and mirror images.
 foreach (int[] solution in allsolutions) {
@@ -41,7 +41,7 @@ foreach (int[] solution in allsolutions) {
          rotate[current[i]] = N - 1 - i;
       current = rotate;
    }
-   if (found.Add (smallest)) uniquesolutions.Add (solution);
+   if (uniqueSolutionKeys.Add (smallest)) uniquesolutions.Add (solution);
 }
 List<int[]> solutionsToPrint;
 string? choice;
