@@ -30,7 +30,7 @@ foreach (var (Score, Word) in results.OrderByDescending (x => x.Score).ThenBy (x
    Console.WriteLine ($"{Score, 2}. {Word}");
    Console.ResetColor ();
 }
-Console.WriteLine ($"---- \n{totalScore} Total");
+Console.WriteLine ($"---- \n{totalScore} total");
 
 int CalculateScore (string word) {
    int score = word.Length == 4 ? 1 : word.Length;
