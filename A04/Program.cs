@@ -10,15 +10,16 @@
 
 using static System.Console;
 
-var charCount = "UXALTNE".ToDictionary (c => c, c => 0);
-
+var charCount = new Dictionary<char, int> ();
 foreach (var line in File.ReadLines ("words 1.txt")) {
-   foreach (var c in line) {
-      if (charCount.TryGetValue (c, out int count)) charCount[c] = count + 1;
+   foreach (var c in line.ToUpper ()) {
+      if (char.IsLetter (c)) {
+         if (charCount.TryGetValue (c, out int value)) charCount[c] = ++value;
+         else charCount[c] = 1;
+      }
    }
 }
+WriteLine ("Top 7 character counts:");
 
-WriteLine ("Character counts in the file:");
-
-foreach (var kvp in charCount.OrderByDescending (kvp => kvp.Value))
-   WriteLine ($"Character '{kvp.Key}': {kvp.Value} occurrences");
+foreach (var kvp in charCount.OrderByDescending (kvp => kvp.Value).Take (7))
+   WriteLine ($"Letter '{kvp.Key}': {kvp.Value} occurrences");
