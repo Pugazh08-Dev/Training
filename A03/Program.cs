@@ -13,7 +13,7 @@ using System.IO;
 using System.Collections.Generic;
 
 char[] letters = ['U', 'X', 'A', 'L', 'T', 'N', 'E'];
-List<(int score, string word)> results = [];
+List<(int Score, string Word)> results = [];
 int totalScore = 0;
 
 foreach (string line in File.ReadAllLines ("words 1.txt")) {
@@ -24,20 +24,17 @@ foreach (string line in File.ReadAllLines ("words 1.txt")) {
    totalScore += score; results.Add ((score, word));
 }
 
-int maxScore = results.Max (x => x.score);
-
-foreach (var (score, word) in results.OrderByDescending (x => x.score).ThenBy (x => x.word)) {
-   if (score == maxScore) Console.ForegroundColor = ConsoleColor.Green;
-
-   Console.WriteLine ($"{score,2}. {word}");
+int maxScore = results.Max (x => x.Score);
+foreach (var (Score, Word) in results.OrderByDescending (x => x.Score).ThenBy (x => x.Word)) {
+   if (Score == maxScore) Console.ForegroundColor = ConsoleColor.Green;
+   Console.WriteLine ($"{Score, 2}. {Word}");
    Console.ResetColor ();
 }
 Console.WriteLine ($"---- \n{totalScore} Total");
 
 int CalculateScore (string word) {
    int score = word.Length == 4 ? 1 : word.Length;
-   if (IsPangram (word))
-      score += 7;
+   if (IsPangram (word)) score += 7;
    return score;
 }
 
