@@ -13,9 +13,8 @@ OutputEncoding = Encoding.UTF8;
 
 const int N = 8;
 int[] board = new int[N];
-List<int[]> allSolutions = [], uniqueSolutions = [];
+List<int[]> allSolutions = [], uniqueSolutions = [], solutionsToPrint = [];
 HashSet<long> uniqueSolutionKeys = [];
-List<int[]> solutionsToPrint;
 ConsoleKey choice;
 
 // Introduce the game and get user's choice.
