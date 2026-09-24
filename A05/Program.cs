@@ -13,9 +13,10 @@ OutputEncoding = Encoding.UTF8;
 
 const int N = 8;
 int[] board = new int[N];
-List<int[]> allSolutions = [], uniqueSolutions = [], solutionsToPrint = [];
+List<int[]> solutions = [];
 HashSet<long> uniqueSolutionKeys = [];
 ConsoleKey choice;
+bool uniqueOnly;
 
 // Introduce the game and get user's choice.
 WriteLine ("8 Queens Problem \n-------");
@@ -28,21 +29,29 @@ while (true) {
    choice = ReadKey ().Key;
    WriteLine ();
    if (choice is ConsoleKey.D1 or ConsoleKey.NumPad1) {
-      solutionsToPrint = allSolutions;
+      uniqueOnly = false;
       break;
    }
    if (choice is ConsoleKey.D2 or ConsoleKey.NumPad2) {
-      solutionsToPrint = uniqueSolutions;
+      uniqueOnly = true;
       break;
    }
    WriteLine ("Invalid choice. Please enter 1 or 2.\n");
 }
 
 // Find all solutions.
-FindSolutions (0);
-// Find unique solutions only when requested.
-if (choice is ConsoleKey.D2 or ConsoleKey.NumPad2) {
-   foreach (int[] solution in allSolutions) {
+FindSolutions (0, uniqueOnly);
+PrintSolutions (solutions);
+
+#region Methods ------------------------------------------------------
+// Find all solutions.
+void FindSolutions (int row, bool uniqueOnly) {
+   if (row == N) {
+      int[] solution = (int[])board.Clone ();
+      if (!uniqueOnly) {
+         solutions.Add (solution);
+         return;
+      }
       int[] current = solution;
       long smallest = long.MaxValue;
       for (int r = 0; r < 4; r++) {
@@ -54,17 +63,7 @@ if (choice is ConsoleKey.D2 or ConsoleKey.NumPad2) {
          }
          current = GetRotated (current);
       }
-      if (uniqueSolutionKeys.Add (smallest)) uniqueSolutions.Add (solution);
-   }
-   solutionsToPrint = uniqueSolutions;
-}
-PrintSolutions (solutionsToPrint);
-
-#region Methods ------------------------------------------------------
-// Find all solutions.
-void FindSolutions (int row) {
-   if (row == N) {
-      allSolutions.Add ((int[])board.Clone ());
+      if (uniqueSolutionKeys.Add (smallest)) solutions.Add (solution);
       return;
    }
    for (int col = 0; col < N; col++) {
@@ -78,7 +77,7 @@ void FindSolutions (int row) {
       }
       if (isSafe) {
          board[row] = col;
-         FindSolutions (row + 1);
+         FindSolutions (row + 1, uniqueOnly);
       }
    }
 }
