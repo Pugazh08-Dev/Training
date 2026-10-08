@@ -22,36 +22,37 @@ static double ParseDouble (string? input) {
    input = input.Trim ();
    int index = 0;
    bool isNegative = false;
-   while (index < input.Length && input[index] == ' ') index++;
    if (index < input.Length && (input[index] == '-' || input[index] == '+')) {
       isNegative = input[index] == '-';
       index++;
    }
    double result = 0;
-   bool hasDigit = false;
+   bool hasIntegerDigit = false;
    // Read integer part
    while (index < input.Length && char.IsDigit (input[index])) {
       result = result * 10 + (input[index] - '0');
       index++;
-      hasDigit = true;
+      hasIntegerDigit = true;
    }
    // Read decimal part
    if (index < input.Length && input[index] == '.') {
+      if (!hasIntegerDigit) throw new FormatException ("Digits required before the decimal point");
       index++;
+      if (index >= input.Length || !char.IsDigit (input[index]))
+         throw new FormatException ("Digits are required after the decimal point.");
       double decimalPlace = 0.1;
       while (index < input.Length && char.IsDigit (input[index])) {
          result += (input[index] - '0') * decimalPlace;
          decimalPlace *= 0.1;
          index++;
-         hasDigit = true;
       }
    }
-   if (!hasDigit) throw new FormatException ("Input string is not in a correct format.");
-   // Read exponent part
+   if (!hasIntegerDigit) throw new FormatException ("Input string is not in a correct format.");
+   // Read exponent
    if (index < input.Length && (input[index] == 'e' || input[index] == 'E')) {
       index++;
       bool exponentNegative = false;
-      // Exponent sign
+      // Read exponent sign
       if (index < input.Length && (input[index] == '+' || input[index] == '-')) {
          exponentNegative = input[index] == '-';
          index++;
@@ -64,13 +65,10 @@ static double ParseDouble (string? input) {
          index++;
          hasExponentDigit = true;
       }
-      // e/E must be followed by at least one digit
       if (!hasExponentDigit) throw new FormatException ("Invalid exponent format.");
-      // Apply exponent
       if (exponentNegative) exponent = -exponent;
       result *= Math.Pow (10, exponent);
    }
-   while (index < input.Length && input[index] == ' ') index++;
    if (index != input.Length) throw new FormatException ("Input string is not a correct format.");
    return isNegative ? -result : result;
 }
