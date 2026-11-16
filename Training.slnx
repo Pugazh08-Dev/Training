@@ -2,11 +2,5 @@
   <Project Path="A10.1/A10.1.csproj" />
   <Project Path="A03/A03.csproj" />
   <Project Path="A06/A06.csproj" />
-<<<<<<< HEAD
 </Solution>
-||||||| parent of d53bd78 (Implemented file name parser using state machine)
-</Solution>
-=======
-  <Project Path="A10.1/A10.1.csproj" />
-</Solution>
->>>>>>> d53bd78 (Implemented file name parser using state machine)
+
