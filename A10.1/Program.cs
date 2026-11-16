@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿// ------------------------------------------------------------------------------------------------
 // Training ~ A training program for new joinees at Trumpf Metamation.
 // Copyright (c) Metamation India.
@@ -216,3 +217,7 @@ class Program {
    #endregion
 }
 #endregion
+||||||| parent of d53bd78 (Implemented file name parser using state machine)
+=======
+﻿Console.WriteLine("Hello, World!");
+>>>>>>> d53bd78 (Implemented file name parser using state machine)
