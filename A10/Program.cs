@@ -1,9 +1,10 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿
+// ------------------------------------------------------------------------------------------------
 // Training ~ A training program for new joinees at Trumpf Metamation.
 // Copyright (c) Metamation India.
 // ------------------------------------------------------------------------------------------------
 // Program.cs
-// Program to Implement file name parser using a state machine.
+// Program to implement file name parser using a state machine.
 // ------------------------------------------------------------------------------------------------
 
 using System.Text;
@@ -12,200 +13,160 @@ using static System.Console;
 #region class Program -----------------------------------------------------------------------------
 class Program {
    static void Main () {
-      string[] testCases = {
-         @"C:\FOLDER1\FOLDER2\SAMPLE.TXT",
-         @"D:\PROJECT\SOURCE\PROGRAM.CS",
-         @"A:\DATA\REPORT.PDF",
-         @"Z:\FOLDER\FILE",
-         @"C:\FOLDER1\FOLDER2\FILE.",
-         @"C:\FOLDER1\\FILE.TXT",
-         @"C:\folder\FILE.TXT",
-         @"1:\FOLDER\FILE.TXT",
-         @"C:\FILE.TXT",
-         @"C:FOLDER\FILE.TXT"
-      };
-      var validPaths = new List<string> ();
-      var invalidPaths = new List<(string Path, string Reason)> ();
-      // Parse all input paths
+      #region Private data ------------------------------------------
+      string[] testCases = [
+         @"C:\FOLDER\DATA\SAMPLE.TXT", @"D:\PROJECT\SOURCE\PROGRAM.CS", @"A:\DATA\REPORT.PDF",
+         @"Z:\FOLDER\FILE", @"C:\FOLDER\DATA\FILE.", @"C:\FOLDER\\FILE.TXT", @"C:\folder\FILE.TXT",
+         @"Cz:\FOLDER\FILE.TXT", @"C:\FILE.TXT", @"C:FOLDER\FILE.TXT"
+      ];
+      #endregion
+      int validCount = 0;
+      int invalidCount = 0;
+      WriteLine ("FILE NAME PARSER \n----------------");
       foreach (string path in testCases) {
-         StringBuilder segment = new ();
-         if (FileNameParser.TryParse (path, out var result, out string error, segment))
-            validPaths.Add (path);
-         else invalidPaths.Add ((path, error));
+         if (FileNameParser.TryParse (path, out var result, out string error)) {
+            ForegroundColor = ConsoleColor.Green;
+            WriteLine ($"\nVALID   : {path}");
+            ResetColor ();
+            WriteLine ($"Drive     : {result.Drive}\nDirectory : {result.Directory}" +
+               $"\nFile Name : {result.FileName}\nExtension : {result.Extension}");
+            validCount++;
+         } else {
+            ForegroundColor = ConsoleColor.Red;
+            WriteLine ($"\nINVALID : {path}");
+            ResetColor ();
+            WriteLine ($"Reason    : {error}");
+            invalidCount++;
+         }
       }
-      // Display valid paths
-      ForegroundColor = ConsoleColor.Green;
-      WriteLine ($"\n============ VALID FILE PATHS ============\n");
-      ResetColor ();
-      foreach (string path in validPaths) {
-         var result = FileNameParser.Parse (path);
-         ForegroundColor = ConsoleColor.Green;
-         WriteLine ($"[VALID] {path}");
-         ResetColor ();
-         WriteLine ($"   Drive     : {result.Drive} \n   Directory : {result.Directory} \n" +
-            $"   File Name : {result.FileName} \n   Extension : {result.Extension}\n");
-      }
-      // Display invalid paths
-      ForegroundColor = ConsoleColor.Red;
-      WriteLine ($"\n============ INVALID FILE PATHS ============\n");
-      ResetColor ();
-      foreach (var item in invalidPaths) {
-         ForegroundColor = ConsoleColor.Red;
-         WriteLine ($"[INVALID] {item.Path}");
-         ResetColor ();
-         WriteLine ($"   Reason : {item.Reason}\n");
-      }
-      WriteLine ($"--------------------------------------- \nTotal Paths   : {testCases.Length}");
-      ForegroundColor = ConsoleColor.Green;
-      WriteLine ($"Valid Paths   : {validPaths.Count}");
-      ResetColor ();
-      ForegroundColor = ConsoleColor.Red;
-      WriteLine ($"Invalid Paths : {invalidPaths.Count}");
-      ResetColor ();
-      WriteLine ("---------------------------------------");
-      ReadKey ();
+      WriteLine ($"\n----------------\nValid Paths   : {validCount}" +
+         $"\nInvalid Paths : {invalidCount}");
    }
 }
 #endregion
 
 #region class FileNameParser ----------------------------------------------------------------------
-static class FileNameParser {
+class FileNameParser {
    public static (string Drive, string Directory, string FileName, string Extension)
       Parse (string path) {
-      if (!TryParse (path, out var result, out string error, new ()))
-         throw new FormatException (error);
-      return result;
+      if (TryParse (path, out var result, out string error)) return result;
+      throw new FormatException (error);
    }
-   public static bool TryParse (string path, out (string Drive, string Directory, string FileName,
-      string Extension) result, out string error, StringBuilder segment) {
-      ArgumentNullException.ThrowIfNull (segment);
-      result = default;
-      error = string.Empty;
-      if (path == null) {
-         error = "Path cannot be null.";
-         return false;
-      }
-      if (path.Length == 0) {
+
+   #region Method TryParse ------------------------------------------
+   public static bool TryParse (string path,
+      out (string Drive, string Directory, string FileName, string Extension) result,
+      out string error) {
+      result = ("", "", "", "");
+      error = "";
+      if (string.IsNullOrWhiteSpace (path)) {
          error = "Path cannot be empty.";
          return false;
       }
       ParserState state = ParserState.DriveLetter;
-      string drive = string.Empty;
-      string filename = string.Empty;
-      string extension = string.Empty;
+      static void none () { }
+      Action todo;
+      string drive = "";
       StringBuilder directory = new ();
+      StringBuilder segment = new ();
+      string fileName = "";
+      StringBuilder extension = new ();
       int directoryCount = 0;
-      int pos = 0;
-      while (pos < path.Length) {
-         char current = path[pos];
-         switch (state) {
-            case ParserState.DriveLetter:
-               if (IsValidDrive (current)) {
-                  drive = current.ToString ();
-                  state = ParserState.Colon;
-               } else {
-                  error = $"Drive letter must be between A and Z.";
-                  return false;
-               }
-               break;
-            case ParserState.Colon:
-               if (current == ':') state = ParserState.RootSeperator;
-               else {
-                  error = $"Missing colon after drive letter at pos {pos}.";
-                  return false;
-               }
-               break;
-            case ParserState.RootSeperator:
-               if (current == '\\') state = ParserState.PathSegment;
-               else {
-                  error = $"Missing root seperator '\\' after colon at pos {pos}.";
-                  return false;
-               }
-               break;
-            case ParserState.PathSegment:
-               if (IsValidCharacter (current)) segment.Append (current);
-               else if (current == '\\') {
-                  if (segment.Length == 0) {
-                     error = $"Empty directory name detected at pos {pos}.";
-                     return false;
-                  }
+      int position = 0;
+      string parseError = "";
+      foreach (char ch in path) {
+         // Explicit tuple type fixes CS8131 and CS8506.
+         (ParserState nextState, Action nextAction) transition = (state, ch) switch {
+            (ParserState.DriveLetter, >= 'A' and <= 'Z') =>
+               (ParserState.Colon, () => drive = ch.ToString ()),
+            (ParserState.Colon, ':') => (ParserState.RootSeparator, none),
+            (ParserState.RootSeparator, '\\') => (ParserState.PathSegment, none),
+            (ParserState.PathSegment, >= 'A' and <= 'Z') =>
+               (ParserState.PathSegment, () => segment.Append (ch)),
+            (ParserState.PathSegment, '\\') when segment.Length > 0 =>
+               (ParserState.PathSegment, () => {
                   if (directory.Length > 0) directory.Append ('\\');
                   directory.Append (segment);
                   directoryCount++;
                   segment.Clear ();
-               } else if (current == '.') {
-                  if (segment.Length == 0) {
-                     error = $"File name is missing before the extension at pos {pos}.";
-                     return false;
-                  }
-                  if (directoryCount == 0) {
-                     error = $"Atleast one directory is required before the filename";
-                     return false;
-                  }
-                  filename = segment.ToString ();
-                  segment.Clear ();
-                  state = ParserState.Extension;
-               } else if (char.IsLower (current)) {
-                  error = $"Lowercase character '{current}' is not allowed at pos {pos}.";
-                  return false;
-               } else {
-                  error = $"Invalid character '{current}' at pos {pos}.";
-                  return false;
                }
-               break;
-            case ParserState.Extension:
-               if (IsValidCharacter (current)) extension += current;
-               else if (char.IsLower (current)) {
-                  error = $"Lowercase character '{current}' is not allowed at pos {pos}.";
-                  return false;
-               } else {
-                  error = $"Invalid character '{current}' at pos {pos}.";
-                  return false;
-               }
-               break;
+            ),
+            (ParserState.PathSegment, '.') when segment.Length > 0 && directoryCount > 0 =>
+                  (ParserState.Extension, () => {
+                     fileName = segment.ToString ();
+                     segment.Clear ();
+                  }
+            ),
+            (ParserState.Extension, >= 'A' and <= 'Z') =>
+               (ParserState.Extension, () => extension.Append (ch)),
+            _ => (ParserState.Error, () => {
+               parseError = GetErrorMessage (state, ch, segment, directoryCount, position);
+            }
+            )
+         };
+         state = transition.nextState;
+         todo = transition.nextAction;
+         todo ();
+         if (state == ParserState.Error) {
+            error = parseError;
+            return false;
          }
-         pos++;
+         position++;
       }
-      // Final state validation
+      // Validate the final parser state.
       if (state == ParserState.PathSegment) {
-         if (segment.Length == 0) error = $"File name is missing.";
-         else if (directoryCount == 0)
-            error = $"At Least one directory and a file name with extension are required.";
-         else error = $"Missing file extension";
+         if (segment.Length == 0 && directoryCount == 0)
+            error = "At least one directory and a file name are required.";
+         else if (segment.Length == 0) error = "File name is missing.";
+         else if (directoryCount == 0) error = "At least one directory is required.";
+         else error = "File extension is missing.";
          return false;
       }
       if (state == ParserState.Extension && extension.Length == 0) {
-         error = $"File extension cannot be empty";
+         error = "File extension cannot be empty.";
          return false;
       }
       if (state != ParserState.Extension) {
-         error = $"Incomplete filepath";
+         error = "Incomplete file path.";
          return false;
       }
       state = ParserState.Complete;
-      result = (drive, directory.ToString (), filename, extension);
+      result = (drive, directory.ToString (), fileName, extension.ToString ());
       return true;
    }
    #endregion
 
-   #region Implementation -------------------------------------------
-   // Checks whether the character is valid
-   private static bool IsValidCharacter (char value) => (value is >= 'A' and <= 'Z') ||
-      (value is >= '0' and <= '9');
-
-   // Checks whether the character belongs to A-Z
-   private static bool IsValidDrive (char value) => value is >= 'A' and <= 'Z';
+   #region Method GetErrorMessage -----------------------------------
+   static string GetErrorMessage (ParserState state, char ch, StringBuilder segment,
+      int directoryCount, int position) => state switch {
+         ParserState.DriveLetter => "Drive letter must be an uppercase letter between A and Z.",
+         ParserState.Colon => "Colon ':' expected after the drive letter.",
+         ParserState.RootSeparator => "Root separator '\\' expected after the colon.",
+         ParserState.PathSegment when ch == '\\' && segment.Length == 0 =>
+            "Empty directory names are not allowed.",
+         ParserState.PathSegment when ch == '.' && segment.Length == 0 => "File name is missing.",
+         ParserState.PathSegment when ch == '.' && directoryCount == 0 =>
+            "At least one directory is required before the file name.",
+         ParserState.PathSegment when ch >= 'a' && ch <= 'z' =>
+            "Only uppercase letters A-Z are allowed in directory and file names.",
+         ParserState.Extension when ch >= 'a' && ch <= 'z' =>
+            "Only uppercase letters A-Z are allowed in the extension.",
+         ParserState.PathSegment => $"Invalid character '{ch}' at position {position}.",
+         ParserState.Extension => $"Invalid character '{ch}' in file extension.",
+         _ => "Invalid file path format."
+      };
    #endregion
-}
 
-#region Enum ParserState --------------------------------------------------------------------------
-enum ParserState {
-   DriveLetter,
-   Colon,
-   RootSeperator,
-   PathSegment,
-   Extension,
-   Complete,
-   Error
+   #region Enum ParserState -----------------------------------------------------------------------
+   enum ParserState {
+      DriveLetter,
+      Colon,
+      RootSeparator,
+      PathSegment,
+      Extension,
+      Complete,
+      Error
+   }
+   #endregion
 }
 #endregion
