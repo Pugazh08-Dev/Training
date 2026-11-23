@@ -86,11 +86,11 @@ class FileNameParser {
       return true;
    }
    #endregion
+}
+#endregion
 
-   #region Enum : State ---------------------------------------------------------------------------
-   enum State {
-      DriveLetter, Colon, RootSeparator, PathSegment, Extension, Complete, Error
-   }
-   #endregion
+#region Enum State --------------------------------------------------------------------------------
+enum State {
+   DriveLetter, Colon, RootSeparator, PathSegment, Extension, Complete, Error
 }
 #endregion
