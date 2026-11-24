@@ -14,7 +14,7 @@ class Program {
    static void Main () {
       int valCount = 0, invalCount = 0;
       WriteLine ("FILE NAME PARSER\n----------------");
-      foreach (string path in testCases) {
+      foreach (string path in sTestCases) {
          if (FileNameParser.TryParse (path, out var result)) {
             ForegroundColor = ConsoleColor.Green;
             WriteLine ($"\nVALID   : {path}");
@@ -33,7 +33,7 @@ class Program {
    }
 
    #region Private data ---------------------------------------------
-   static string[] testCases = [
+   static string[] sTestCases = [
          @"C:\FOLDER\DATA\SAMPLE.TXT", @"D:\PROJECT\SOURCE\PROGRAM.CS", @"A:\DATA\REPORT.PDF",
          @"Z:\FOLDER\FILE", @"C:\FOLDER\DATA\FILE.", @"C:\FOLDER\\FILE.TXT", @"C:\folder\FILE.TXT",
          @"Cz:\FOLDER\FILE.TXT", @"C:\FILE.TXT", @"C:FOLDER\FILE.TXT", @"C:\FOLDER1\FILE.TXT",
