@@ -1,29 +1,25 @@
-﻿// -----------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Training ~ A training program for new joinees at Metamation, Batch- July 2026.
 // Copyright (c) Metamation India.
-// -----------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Program.cs
 // Program to solve the 8 Queens problem and find all possible solutions.
 // Also eliminates identical solutions caused by rotations and mirror images.
-
 using System.Text;
 using static System.Console;
 
 OutputEncoding = Encoding.UTF8;
-
 const int N = 8;
 int[] board = new int[N];
 List<int[]> solutions = [];
 HashSet<long> uniqueSolutionKeys = [];
 ConsoleKey choice;
 bool uniqueOnly;
-
 // Introduce the game and get user's choice.
 WriteLine ("8 Queens Problem \n-------");
 WriteLine ("Place 8 queens on an 8x8 chessboard so that no two queens attack each other. \n");
 WriteLine ("1. Print all solutions");
 WriteLine ("2. Print unique solutions \n");
-
 while (true) {
    Write ("Enter your choice: ");
    choice = ReadKey ().Key;
@@ -38,12 +34,11 @@ while (true) {
    }
    WriteLine ("Invalid choice. Please enter 1 or 2.\n");
 }
-
 // Find all solutions.
 FindSolutions (0, uniqueOnly);
 PrintSolutions (solutions);
 
-#region Methods ------------------------------------------------------
+#region Methods -----------------------------------------------------
 // Find all solutions.
 void FindSolutions (int row, bool uniqueOnly) {
    if (row == N) {
