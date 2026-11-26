@@ -1,20 +1,22 @@
-﻿// --------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Training ~ A training program for new joinee at Trumpf Metamation, Batch - July 2026.
 // Copyright (c) Metamation India.
-// ------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Program.cs
 // A09: Implementation of generic type of Queue using array.
-// --------------------------------------------------------------------------------------------
-
+// ------------------------------------------------------------------------------------------------
 using static System.Console;
 using static System.ConsoleColor;
 
+#region class Program -----------------------------------------------------------------------------
 class Program {
    static void Main () {
       QueueValidator.Execute ();
    }
 
+   #region class CircularQueue<T> -----------------------------------------------------------------
    class CircularQueue<T> {
+      #region Properties --------------------------------------------
       private T[] mBuffer;
       private int mFront;
       private int mRear;
@@ -26,7 +28,9 @@ class Program {
          mBuffer = new T[4];
          foreach (T element in elements) Add (element);
       }
+      #endregion
 
+      #region Methods -----------------------------------------------
       // Adds an element at the rear of the queue
       public void Add (T value) {
          if (IsFull) IncreaseCapacity ();
@@ -63,8 +67,11 @@ class Program {
             destination[index] = mBuffer[sourceIndex];
          }
       }
+      #endregion
    }
+   #endregion
 
+   #region Class QueueValidator -------------------------------------------------------------------
    class QueueValidator {
       public static void Execute () {
          Validate (new CircularQueue<int> (10, 20, 30, 40), 50, 10, "INTEGER");
@@ -73,6 +80,7 @@ class Program {
          Validate (new CircularQueue<double> (1.5, 2.5, 3.5, 4.5), 5.5, 1.5, "DOUBLE");
       }
 
+      #region Methods -----------------------------------------------
       private static void Validate<T> (
          CircularQueue<T> queue,
          T newValue,
@@ -103,5 +111,8 @@ class Program {
          WriteLine ($"{description,-32} : {(result ? "PASS" : "FAIL")}");
          ResetColor ();
       }
+      #endregion
    }
+   #endregion
 }
+#endregion
