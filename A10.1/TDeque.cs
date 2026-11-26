@@ -1,81 +1,86 @@
 ﻿
 // ------------------------------------------------------------------------------------------------
-// Training ~ A training program for new joinees at Trumpf Metamation.
+// Training ~ A training program for new joinees at TRUMPF Metamation.
 // Copyright (c) Metamation India.
 // ------------------------------------------------------------------------------------------------
 // TDeque.cs
-// Generic double-ended queue implementation using a circular array.
+// Generic double-ended queue implemented using a circular array.
 // ------------------------------------------------------------------------------------------------
-#region class TDeque<T> ---------------------------------------------------------------------------
+using static ESide;
+
+#region Class TDeque ------------------------------------------------------------------------------
 class TDeque<T> {
-   const int INITIAL_CAPACITY = 4;
-   const int RESIZE_FACTOR = 2;
-   T[] mBuffer = new T[INITIAL_CAPACITY];
-   int mFront;
-   int mSize;
-   public int Count => mSize;
-   public int Capacity => mBuffer.Length;
-   public bool IsEmpty => mSize == 0;
-   // Adds an item at the front
-   public void AddFirst (T item) => Add (item, DequeEnd.Front);
-   // Adds an item at the back
-   public void AddLast (T item) => Add (item, DequeEnd.Back);
-   // Removes and returns the item at the front
-   public T RemoveFirst () => Remove (DequeEnd.Front);
-   // Removes and returns the item at the back
-   public T RemoveLast () => Remove (DequeEnd.Back);
-   // Adds an item at the specified end
+   #region Properties -----------------------------------------------
+   public bool IsEmpty => mUsed == 0;      // Indicates whether the queue is empty.
+   public int Count => mUsed;              // Number of elements in the queue.
+   int Capacity => mData.Length;           // Capacity of the internal array.
+   #endregion
 
    #region Methods --------------------------------------------------
-   void Add (T item, DequeEnd end) {
-      EnsureCapacity ();
-      if (end == DequeEnd.Front) {
-         mFront = (mFront - 1 + Capacity) % Capacity;
-         mBuffer[mFront] = item;
+   public void EnqueueHead (T item) => Enqueue (item, Head);  // Adds an element at the head
+   public void EnqueueTail (T item) => Enqueue (item, Tail);  // Adds an element at the tail
+   public T DequeueHead () => Dequeue (Head);   // Removes and returns an element from the head.
+   public T DequeueTail () => Dequeue (Tail);   // Removes and returns an element from the tail.
+   // Removes all elements and resets the queue.
+   public void Clear () {
+      mData = new T[INITCAPACITY];
+      (mHead, mTail, mUsed) = (0, 0, 0);
+   }
+   #endregion
+
+   #region Implementation -------------------------------------------
+   // Adds an element at the specified end.
+   void Enqueue (T item, ESide side) {
+      Resize ();
+      if (side == Head) {
+         mHead = (mHead - 1 + Capacity) % Capacity;
+         mData[mHead] = item;
       } else {
-         int back = (mFront + mSize) % Capacity;
-         mBuffer[back] = item;
+         mData[mTail] = item;
+         mTail = (mTail + 1) % Capacity;
       }
-      mSize++;
+      mUsed++;
    }
 
-   // Removes and returns an item from the specified end.
-   T Remove (DequeEnd end) {
-      if (IsEmpty) throw new InvalidOperationException ("Deque is Empty");
+   // Removes and returns an element from the specified end.
+   T Dequeue (ESide side) {
+      if (IsEmpty) throw new InvalidOperationException ("Queue is Empty");
       int index;
-      if (end == DequeEnd.Front) {
-         index = mFront;
-         mFront = (mFront + 1) % Capacity;
-      } else index = (mFront + mSize - 1) % Capacity;
-      T item = mBuffer[index];
-      mBuffer[index] = default!;
-      mSize--;
-      if (IsEmpty) mFront = 0;
+      if (side == Head) {
+         index = mHead;
+         mHead = (mHead + 1) % Capacity;
+      } else {
+         mTail = (mTail - 1 + Capacity) % Capacity;
+         index = mTail;
+      }
+      T item = mData[index];
+      mData[index] = default!;
+      mUsed--;
       return item;
    }
 
-   // Ensures that the array has enough space.
-   void EnsureCapacity () {
-      if (mSize < Capacity) return;
-      T[] newBuffer = new T[checked(Capacity * RESIZE_FACTOR)];
-      for (int i = 0; i < mSize; i++) newBuffer[i] = mBuffer[(mFront + i) % Capacity];
-      mBuffer = newBuffer;
-      mFront = 0;
+   // Doubles the array capacity when it becomes full.
+   void Resize () {
+      if (mUsed < Capacity) return;
+      T[] temp = new T[checked(Capacity * RESIZEFACTOR)];
+      for (int i = 0; i < mUsed; i++) temp[i] = mData[(mHead + i) % Capacity];
+      mData = temp;
+      (mHead, mTail) = (0, mUsed);
    }
+   #endregion
 
-   // Removes all items from the deque.
-   public void Clear () {
-      mBuffer = new T[INITIAL_CAPACITY];
-      mFront = 0;
-      mSize = 0;
-   }
+   #region Constants ------------------------------------------------
+   const int INITCAPACITY = 4;
+   const int RESIZEFACTOR = 2;
+   #endregion
+
+   #region Private data ---------------------------------------------
+   T[] mData = new T[INITCAPACITY];
+   int mHead, mTail, mUsed;
    #endregion
 }
 #endregion
 
-#region Enum DequeEnd -----------------------------------------------------------------------------
-enum DequeEnd {
-   Front,
-   Back
-}
+#region Enum ESide --------------------------------------------------------------------------------
+enum ESide { Head, Tail }
 #endregion
