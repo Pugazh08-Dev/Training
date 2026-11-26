@@ -1,13 +1,13 @@
-﻿//-----------------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------------------------
 // Training ~ A training program for new joinees at Metamation, Batch- July 2026.
 // Copyright (c) Metamation India.
-// -------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 
 // Program.cs
 // Write a program to find the occurences of a given character in a Words.txt file.
-// The program should read the file, count the number of times the specified character appears, and display the result to the user.
+// The program should read the file, count the number of times the specified character appears,
+// and display the result to the user.
 // ------------------------------------------------------------------------------------------------
-
 using static System.Console;
 
 var charCount = new Dictionary<char, int> ();
